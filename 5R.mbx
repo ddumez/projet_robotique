@@ -1,0 +1,49 @@
+// Model for the RR planar serial robot
+//======================================
+
+Constants
+
+    pi=3.141592653589794;
+    
+    // architecture parameters
+    a11 = -22.46174947;
+    a12 = 0.03725057; 
+    a21 = 22.60218071; 
+    a22 = -0.19941578;
+	l1 = 17.79576115;
+	l2 = 17.7979901;
+	l3 = 17.89124913;
+	l4 = 17.50228139;
+
+	x1 = 0 + 5 *cos(0)
+	x2 = -20 + 5*sin(0)
+
+//======================================
+
+Variables
+
+    // pose parameters
+    //x1 in [-5,5];
+    //x2 in [0,5];
+
+    // command parameters
+    q1 in [0,pi];
+    q2 in [-pi,pi];
+
+//======================================
+
+Constraints
+
+    // kinematic equations
+    (a11 + l1*cos(q1) - x1)^2 + (a12 + l1*sin(q1) - x2)^2 - l2^2 = x1;
+    (a21 + l4*cos(q2) - x1)^2 + (a21 + l4*sin(q2) - x2)^2 - l3^2 = x2;
+    
+    // direct kinematic
+    //q1 = pi/4;
+    //q2 = 0;
+
+    // inverse kinematic
+    //x1 = 2;
+    //x2 = 3;
+    
+end

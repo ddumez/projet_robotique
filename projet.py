@@ -121,9 +121,7 @@ real_architechture = calibrate(f_5R,[-22.5, 0, 22.5, 0, 17.8, 17.8, 17.8,17.8],m
 
 #test de la diference avec une pop test
 measures2 = make_measurements(r,commands2)
-print(measures2)
-print([ numpy.max(f_5R(real_architechture, measures2[i], commands2[i])) for i in range(0,36,1)])
-defaut = numpy.max([ numpy.max(f_5R(real_architechture, measures2[i], commands2[i])) for i in range(0,36,1)])
+defaut = numpy.max([ numpy.max(f_5R(real_architechture, measures2[i][0], measures2[i][1])) for i in range(0,36,1)])
 
 
 #affichage

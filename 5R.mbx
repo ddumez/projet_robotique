@@ -35,8 +35,8 @@ l4=17.50228139;
 
 //======================================
 //= Exercice dependant constants
-//x1=0.0;
-//x2=-15.0;
+//x1=0 + 5 *cos(0);
+//x2=-20 + 5*sin(0);
 //======================================
 //t1=0;
 //t2=pi;
@@ -61,9 +61,17 @@ Constraints
 (o11+cos(t1)*l1-x1)^2+(o12+sin(t1)*l1-x2)^2=l2^2;
 (o21+cos(t2)*l4-x1)^2+(o22+sin(t2)*l4-x2)^2=l3^2;
 
+    // direct kinematic
+    //q1 = pi/4;
+    //q2 = 0;
+
+    // inverse kinematic
+    //x1 = 2;
+    //x2 = 3;
+
 //cercles a eviter
 for i=1:No;
 	(o(i)(1) - x1)^2 + (o(i)(2) - x2)^2 >= o(i)(3)^2;
 end
-
+    
 end

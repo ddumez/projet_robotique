@@ -4,6 +4,7 @@ from scipy.sparse.csgraph import connected_components
 import numpy
 from scipy.optimize import least_squares
 import robot
+from scipy.optimize import root
 
 pi=3.141592653590
 
@@ -104,7 +105,7 @@ r=robot.FiveBars([-22.5, 0, 22.5, 0, 17.8, 17.8, 17.8,17.8],0,1)
 nominal_architecture = [-22.5, 0, 22.5, 0, 17.8, 17.8, 17.8,17.8]
 r.pen_up()
 r.go_home()
-
+"""
 commands = []
 commands = commands + [[0,q] for q in range(80,220,20)] + [[q,180] for q in range(-40,110,20)]
 commands = commands + [[40,q] for q in range(80,220,20)] + [[q,140] for q in range(-40,110,20)]
@@ -122,9 +123,66 @@ real_architechture = calibrate(f_5R,[-22.5, 0, 22.5, 0, 17.8, 17.8, 17.8,17.8],m
 #test de la diference avec une pop test
 measures2 = make_measurements(r,commands2)
 defaut = numpy.max([ numpy.max(f_5R(real_architechture, measures2[i][0], measures2[i][1])) for i in range(0,36,1)])
-
+"""
+defaut = 0.73943572916198264
+real_architecture  = [-22.46174947,   0.03725057,  22.60218071,  -0.19941578, 17.79576115,  17.7979901 ,  17.89124913,  17.50228139]
 
 #affichage
-print("architechture : ",real_architechture)
+print("architecture : ",real_architecture)
 print("erreur max : ", defaut)
+
+# Path following
+def lemniscate(t):
+	r = 5
+	return (r*numpy.cos(t), -20+r*numpy.sin(t))
+
+def discretize(r2,trajectory,tmin,tmax,steps):
+	target_path = [trajectory(t) for t in numpy.linspace(tmin,tmax,steps)]
+	r2.ax.plot([x[0] for x in target_path],[x[1] for x in target_path],color='blue',linestyle=':',marker='+')
+	r2.refresh()
+	return target_path
+
+target_path = discretize(r,lemniscate,0,2*numpy.pi,50)
+x0 = target_path[0]
+
+#quatre solutions possibles
+q0 = numpy.degrees([0.1184982872423866, 3.009659697680965]) #ok coude en haut + coude en haut => c'est celle là la bonne
+#q0 = numpy.degrees([0.1184982872423866, -1.850133485777623]) # coude en haut + coude en bas
+#q0 = numpy.degrees([-1.29836667963693675, 3.009659697680965]) #ok coude en bas + coude en haut
+#q0 = numpy.degrees([-1.29836667963693675,-1.850133485777623]) #coude en bas + coude en bas
+r.actuate(q0)
+
+def continuation(function_xq,target_path,q0):
+    qs=[]
+    qk=q0
+    for xk in target_path:
+        res = root(lambda q: function_xq(xk,q), qk)
+        if not res.success:
+            print(res.message)
+            break
+        qk = res.x
+        qs.append(qk)
+    return qs
+
+commands = continuation(lambda x,q:f_5R(nominal_architecture,x,q),target_path,q0)
+commands2 = continuation(lambda x,q:f_5R(real_architecture,x,q),target_path,q0)
+
+def draw_path(r,commands,col='blue'):
+    r.pen_up()
+    r.go_home()
+    r.actuate(commands[0])
+    r.pen_down(col)
+    real_path = []
+    for q in commands:
+        r.actuate(q)
+        real_path.append(numpy.array(r.measure_pose()))
+    r.pen_up()
+    r.go_home()
+    return real_path
+
+real_path = draw_path(r,commands,col='red')
+real_path2 = draw_path(r,commands2,col='green')
+
+
+
 input("Press <ENTER> to continue...")

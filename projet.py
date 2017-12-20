@@ -146,7 +146,7 @@ target_path = discretize(r,lemniscate,0,2*numpy.pi,50)
 x0 = target_path[0]
 
 #quatre solutions possibles
-q0 = numpy.degrees([0.1184982872423866, 3.009659697680965]) #ok coude en haut + coude en haut => c'est celle là la bonne
+q0 = numpy.degrees([0.1184982872423866, 3.009659697680965])
 #q0 = numpy.degrees([0.1184982872423866, -1.850133485777623]) # coude en haut + coude en bas
 #q0 = numpy.degrees([-1.29836667963693675, 3.009659697680965]) #ok coude en bas + coude en haut
 #q0 = numpy.degrees([-1.29836667963693675,-1.850133485777623]) #coude en bas + coude en bas

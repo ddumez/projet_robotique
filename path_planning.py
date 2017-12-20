@@ -62,6 +62,7 @@ for i in range(0,nc-1,1):
 	sp.draw2D(ax1,2,3,ec=None)
 fig2.show()
 """
+
 def path_planner(pav,nei,Bori,Bdes):
     print('Building shortest path from ',Bori,' to ',Bdes)
     # construction of the shortest path
@@ -85,12 +86,19 @@ r.ax.plot([Xori[0],Xdes[0]],[Xori[1],Xdes[1]],linestyle=':',marker='*',color='.3
 r.refresh()
 
 paving_5R = paving.Paving()
-paving_5R.load_mnf('5R.mnf') #Manque ajout des singularités parallèles
+paving_5R.load_mnf('5R.mnf') #Manque ajout des singularites paralleles
 neighborhood = paving_5R.adjacency_matrix()
 
 ori = list(paving_5R.boxes_intersecting(Xori,d=[1,2]))
 des = list(paving_5R.boxes_intersecting(Xdes,d=[1,2]))
-shortest_path=path_planner(paving_5R,neighborhood,ori[0],des[0])
+i = 0
+j = 0
+shortest_path = []
+while (i < len(ori)) and not(shortest_path):
+    while (i < len(ori)) and not(shortest_path):
+        shortest_path=path_planner(paving_5R,neighborhood,ori[i],des[j])
+        j = j+1
+    i = i+1
 
 from scipy.sparse.csgraph import connected_components
 

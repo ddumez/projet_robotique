@@ -63,20 +63,26 @@ Constraints
 (o21+cos(t2)*l4-x1)^2+(o22+sin(t2)*l4-x2)^2=l3^2;
 
     // direct kinematic
-    //q1 = pi/4;
-    //q2 = 0;
+    //t1 = pi/4;
+    //t2 = 0;
 
     // inverse kinematic
     //x1 = 2;
     //x2 = 3;
+
+
+//mettre les contraintes pour eviter les singularitees parralleles
+	//verions avec la jacobienne non singuliere demande un -e 0.6 donc mauvais
+	//( x1-o11-cos(t1)*l1)*( x2-o22-sin(t2)*l4) - ( x2-o12-sin(t1)*l1)*( x1-o21-cos(t2)*l4) >= epsilon;
+	//version semantique : pas les 2 bras (donc les 3 points alignie)
+	(x1^2 + x2^2 - (o11+cos(t1)*l1)*x1 - (o12+sin(t1)*l1)*x2 - (o21+cos(t2)*l4)*x1 - (o22+sin(t2)*l4)*x2 + (o11+cos(t1)*l1)*(o21+cos(t2)*l4) + (o12+sin(t1)*l1)*(o22+sin(t2)*l4))^2 >= epsilon;
+
 
 //cercles a eviter
 for i=1:No;
 	(o(i)(1) - x1)^2 + (o(i)(2) - x2)^2 >= o(i)(3)^2 + epsilon;
 end
 
-//mettre les contraintes pour eviter les singularitées parrallèles
-
-//-e 0.1 -E 0.9
+//-e 0.1 -E 0.8
    
 end

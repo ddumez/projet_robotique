@@ -105,31 +105,35 @@ r=robot.FiveBars([-22.5, 0, 22.5, 0, 17.8, 17.8, 17.8,17.8],0,1)
 nominal_architecture = [-22.5, 0, 22.5, 0, 17.8, 17.8, 17.8,17.8]
 r.pen_up()
 r.go_home()
-"""
+
+#commandes pour le calibrage
 commands = []
 commands = commands + [[0,q] for q in range(80,220,20)] + [[q,180] for q in range(-40,110,20)]
 commands = commands + [[40,q] for q in range(80,220,20)] + [[q,140] for q in range(-40,110,20)]
 commands = commands + [[q,180-q] for q in range(-40,80,10)]
 
+#commandes pour le test
 commands2 = []
 commands2 = commands2 + [[10,q] for q in range(80,220,10)] + [[q,190] for q in range(-40,100,10)]
 commands2 = commands2 + [[q,180+q] for q in range(-40,40,10)]
 
 #calcul de l'architecture reele
 measures = make_measurements(r,commands)
-real_architechture = calibrate(f_5R,[-22.5, 0, 22.5, 0, 17.8, 17.8, 17.8,17.8],measures)
-
+real_architecture = calibrate(f_5R,[-22.5, 0, 22.5, 0, 17.8, 17.8, 17.8,17.8],measures)
 
 #test de la diference avec une pop test
 measures2 = make_measurements(r,commands2)
-defaut = numpy.max([ numpy.max(f_5R(real_architechture, measures2[i][0], measures2[i][1])) for i in range(0,36,1)])
-"""
-defaut = 0.73943572916198264
-real_architecture  = [-22.46174947,   0.03725057,  22.60218071,  -0.19941578, 17.79576115,  17.7979901 ,  17.89124913,  17.50228139]
+defaut = numpy.max([ numpy.max(f_5R(real_architecture, measures2[i][0], measures2[i][1])) for i in range(0,36,1)])
 
 #affichage
 print("architecture : ",real_architecture)
 print("erreur max : ", defaut)
+
+
+"""
+defaut = 0.73943572916198264
+real_architecture  = [-22.46174947,   0.03725057,  22.60218071,  -0.19941578, 17.79576115,  17.7979901 ,  17.89124913,  17.50228139]
+"""
 
 # Path following
 def lemniscate(t):
@@ -145,7 +149,7 @@ def discretize(r2,trajectory,tmin,tmax,steps):
 target_path = discretize(r,lemniscate,0,2*numpy.pi,50)
 x0 = target_path[0]
 
-#quatre solutions possibles
+#quatre solutions possibles trouve avec ibex pour ateindre le point de depart
 q0 = numpy.degrees([0.1184982872423866, 3.009659697680965])
 #q0 = numpy.degrees([0.1184982872423866, -1.850133485777623]) # coude en haut + coude en bas
 #q0 = numpy.degrees([-1.29836667963693675, 3.009659697680965]) #ok coude en bas + coude en haut
@@ -164,6 +168,7 @@ def continuation(function_xq,target_path,q0):
         qs.append(qk)
     return qs
 
+#commandes avec l'architechture calibre ou non
 commands = continuation(lambda x,q:f_5R(nominal_architecture,x,q),target_path,q0)
 commands2 = continuation(lambda x,q:f_5R(real_architecture,x,q),target_path,q0)
 
@@ -180,9 +185,10 @@ def draw_path(r,commands,col='blue'):
     r.go_home()
     return real_path
 
+#affichage des 2 chemin obtenu
 real_path = draw_path(r,commands,col='red')
 real_path2 = draw_path(r,commands2,col='green')
 
 
-
+#fin
 input("Press <ENTER> to continue...")
